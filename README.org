@@ -1,12 +1,8 @@
 #+TITLE: codespaces.el
 
-[[https://github.com/patrickt/codespaces.el/actions/workflows/check.yml][file:https://github.com/patrickt/codespaces.el/actions/workflows/check.yml/badge.svg]]
+[[https://github.com/F4ban/codespaces.el/actions/workflows/check.yml][file:https://github.com/F4ban/codespaces.el/actions/workflows/check.yml/badge.svg]]
 [[https://melpa.org/#/codespaces][file:https://melpa.org/packages/codespaces-badge.svg]]
-[[https://raw.githubusercontent.com/patrickt/codespaces.el/main/LICENSE][file:https://img.shields.io/github/license/patrickt/codespaces.el.svg]]
-
-** Notice
-
-I have no plans to continue maintaining this package. If you are interested in taking over maintainership, please leave a comment in an issue and I will transfer ownership of this repo to you.
+[[https://raw.githubusercontent.com/F4ban/codespaces.el/main/LICENSE][file:https://img.shields.io/github/license/F4ban/codespaces.el.svg]]
 
 ** About
 
@@ -38,7 +34,7 @@ You will need to:
   * Running =gh codespace list= will verify if permissions are correctly set.
   * You can grant the required permission by running =gh auth refresh -h github.com -s codespace=.
 
-Because the TRAMP package, which underpins this package's functionality, connects to remote servers over SSH, your codespace needs to have an SSH server running on it. If the Docker image that your codespace uses doesn't have an SSH server, install ~sshd~ in your Dockerfile; for codespaces that use Debian-based images, you can add the following to ~.devcontainer/devcontainer.json~:
+Because the TRAMP package, which underpins this package's functionality, connects to remote servers over SSH, your codespace needs to have an SSH server running on it. It normally is enabled by default. If the Docker image that your codespace uses doesn't have an SSH server, install ~sshd~ in your Dockerfile; for codespaces that use Debian-based images, you can add the following to ~.devcontainer/devcontainer.json~:
 
 #+begin_src javascript
   "features": {
@@ -82,13 +78,13 @@ And to disable TRAMP's default ControlMaster settings in your Emacs config, add:
 - =codespaces-stop= does the same but for stopping active codespaces.
 
 * Missing features
-- Should ensure that =gh codespace list= works okay.
 - Completion should sort codespaces by most-recently-used.
 - Should have an unobtrusive =special-mode= buffer for outputs.
 - Should have a nice ~transient.el~ UI.
 
 * Credits
 Thanks to [[https://github.com/anticomputer][Bas Alberts]] for writing the code to register =ghcs= as a valid TRAMP connection method.
+Thanks to [[https://github.com/patrickt][Patrick Thomson]] for writing the entire logic behind codespaces.el.
 
 * License
 GPL3.

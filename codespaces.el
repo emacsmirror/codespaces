@@ -1,9 +1,9 @@
 ;;; codespaces.el --- Connect to GitHub Codespaces via TRAMP  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2022 Patrick Thomson and Bas Alberts
+;; Copyright (C) 2022 Patrick Thomson and Bas Alberts and Fabian Markl
 
 ;; Author: Patrick Thomson <patrickt@github.com>
-;; URL: https://github.com/patrickt/codespaces.el
+;; URL: https://github.com/F4ban/codespaces.el
 ;; Version: 0.2
 ;; Package-Requires: ((emacs "28.1"))
 ;; Keywords: comm
