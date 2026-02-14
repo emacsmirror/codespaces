@@ -56,6 +56,8 @@ When this is nil, the default of '/workspaces/<repo-name>' is used."
 (defun codespaces-setup ()
   "Set up the ghcs tramp-method.  Should be called after requiring this package."
   (interactive)
+  (with-current-buffer (get-buffer-create "*codespaces-output*")
+  (special-mode))
   (unless (executable-find "gh")
     (user-error "Could not find `gh' program in your PATH"))
   (unless (featurep 'json)
