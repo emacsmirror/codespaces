@@ -79,7 +79,6 @@ And to disable TRAMP's default ControlMaster settings in your Emacs config, add:
 
 * Missing features
 - Completion should sort codespaces by most-recently-used.
-- Should have an unobtrusive =special-mode= buffer for outputs.
 - Should have a nice ~transient.el~ UI.
 
 * Credits
