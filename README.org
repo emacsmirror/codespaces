@@ -44,7 +44,7 @@ Because the TRAMP package, which underpins this package's functionality, connect
   }
 #+end_src
 
-* Other recommended configs
+* Recommended Configurations
 
 I /strongly/ recommend you customize ~vc-handled-backends~ and remove the ones that you don't use. I suffered considerable lag to Codespace instances before I did so.
 
@@ -82,8 +82,8 @@ And to disable TRAMP's default ControlMaster settings in your Emacs config, add:
 - Should have a nice ~transient.el~ UI.
 
 * Credits
-Thanks to [[https://github.com/anticomputer][Bas Alberts]] for writing the code to register =ghcs= as a valid TRAMP connection method.
-Thanks to [[https://github.com/patrickt][Patrick Thomson]] for writing the entire logic behind codespaces.el.
+- Thanks to [[https://github.com/anticomputer][Bas Alberts]] for writing the code to register =ghcs= as a valid TRAMP connection method.
+- Thanks to [[https://github.com/patrickt][Patrick Thomson]] for writing the entire logic behind codespaces.el.
 
 * License
-GPL3.
+GPL3
