@@ -57,14 +57,22 @@ When this is nil, the default of '/workspaces/<repo-name>' is used."
   "Set up the ghcs tramp-method.  Should be called after requiring this package."
   (interactive)
   (with-current-buffer (get-buffer-create "*codespaces-output*")
-  (special-mode))
+    (special-mode))
   (unless (executable-find "gh")
     (user-error "Could not find `gh' program in your PATH"))
   (unless (featurep 'json)
     (user-error "Emacs JSON support not available; your Emacs is too old"))
-  (let ((status (call-process "gh" nil nil nil "codespace" "list")))
-  (unless (zerop status)
-    (user-error "Command `gh codespace list` failed\nPlease run `gh codespace list` directly in a terminal to see more details")))
+  (let ((status
+         (let ((inhibit-read-only t))
+           (shell-command
+            (if (eq system-type 'windows-nt)
+                "gh codespace list 1>NUL"
+              "gh codespace list 1>/dev/null")
+            nil "*codespaces-output*"))))
+    (unless (zerop status)
+      (user-error
+       (concat "Command `gh codespace list` failed ... "
+               "[See *codespaces-output* buffer for details]"))))
   (let ((ghcs (assoc "ghcs" tramp-methods))
         (ghcs-methods '((tramp-login-program "gh")
                         (tramp-login-args (("codespace") ("ssh") ("-c") ("%h")))
