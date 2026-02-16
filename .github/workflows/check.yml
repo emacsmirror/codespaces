@@ -2,7 +2,11 @@ name: check
 
 on:
   pull_request:
+    paths:
+    - "codespaces.el"
   push:
+    paths:
+    - "codespaces.el"
 
 jobs:
   check:
