@@ -56,12 +56,13 @@ When this is nil, the default of '/workspaces/<repo-name>' is used."
 (defvar codespaces--validated nil
   "Whether the gh CLI has been validated for codespaces access.")
 
+(with-current-buffer (get-buffer-create "*codespaces-output*")
+  (special-mode))
+
 (defun codespaces--validate-gh ()
   "Validate that `gh' is available and properly configured.
 This check is performed lazily on first use rather than at setup time."
   (unless codespaces--validated
-    (with-current-buffer (get-buffer-create "*codespaces-output*")
-      (special-mode))
     (unless (executable-find "gh")
       (user-error "Could not find `gh' program in your PATH"))
     (unless (featurep 'json)
@@ -168,15 +169,35 @@ allowing for faster startup.  Validation happens lazily on first use."
            finally return result))
 
 (defun codespaces--send-start-async (cs)
-  "Send an `echo' command to CS over ssh."
-  (codespaces--locally
-   (async-shell-command (format "gh codespace ssh -c %s echo 'Codespace ready.'" (codespaces-space-name cs)))))
+  "Send an `echo' command to CS over ssh asynchronously."
+  (let ((display-buffer-alist
+         (list (cons "\\*codespaces-output\\*.*"
+                    (cons #'display-buffer-no-window nil)))))
+    (message "Activating codespace... Check *codespaces-output* for progress.")
+    (async-shell-command
+     (format "gh codespace ssh -c %s echo 'Codespace ready.'"
+             (codespaces-space-name cs))
+     "*codespaces-output*")
+    (set-process-sentinel
+     (get-buffer-process "*codespaces-output*")
+     (lambda (_process event)
+       (if (string-match-p "finished" event)
+           (message "Codespace ready")
+         (user-error
+          "Command `gh codespace ssh` failed... [See *codespaces-output* buffer for details]"))))))
 
 (defun codespaces--send-start-sync (cs)
   "Send an `echo' command to CS over ssh synchronously."
-  (codespaces--locally
-   (shell-command
-    (format "gh codespace ssh -c %s echo 'Codespace ready.'" (codespaces-space-name cs)) (get-buffer shell-command-buffer-name))))
+  (let ((inhibit-read-only t))
+    (codespaces--locally
+     (let ((status
+            (shell-command
+             (format "gh codespace ssh -c %s echo 'Codespace ready.'"
+                     (codespaces-space-name cs))
+             nil "*codespaces-output*")))
+       (unless (zerop status)
+         (user-error
+          "Command `gh codespace ssh` failed ... [See *codespaces-output* buffer for details]"))))))
 
 (defun codespaces--send-stop-sync (cs)
   "Tell codespaces CS to stop."
