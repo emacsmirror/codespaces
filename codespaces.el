@@ -180,8 +180,8 @@ allowing for faster startup.  Validation happens lazily on first use."
      "*codespaces-output*")
     (set-process-sentinel
      (get-buffer-process "*codespaces-output*")
-     (lambda (_process event)
-       (if (string-match-p "finished" event)
+     (lambda (proc _event)
+       (if (= 0 (process-exit-status proc))
            (message "Codespace ready")
          (user-error
           "Command `gh codespace ssh` failed... [See *codespaces-output* buffer for details]"))))))
