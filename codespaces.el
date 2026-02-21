@@ -256,6 +256,7 @@ allowing for faster startup.  Validation happens lazily on first use."
 (defun codespaces-create ()
   "Prompt for repository, branch, and machine type to create a Codespace."
   (interactive)
+  (codespaces--validate-gh)
   (let* ((repo (read-string "Repository (user/repo): "))
          (branch (read-string "Branch: " (or (codespaces--get-default-branch repo) "main")))
          (machine (read-string "Machine type: " "basicLinux32gb")))
