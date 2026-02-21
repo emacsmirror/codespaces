@@ -53,6 +53,10 @@ When this is nil, the default of '/workspaces/<repo-name>' is used."
   :group 'codespaces
   :type 'string)
 
+(defconst codespaces--null-device
+  (if (eq system-type 'windows-nt) "NUL" "/dev/null")
+  "The null device used for suppressing output, specific to the operating system.")
+
 (defvar codespaces--validated nil
   "Whether the gh CLI has been validated for codespaces access.")
 
@@ -70,9 +74,7 @@ This check is performed lazily on first use rather than at setup time."
     (let ((status
            (let ((inhibit-read-only t))
              (shell-command
-              (if (eq system-type 'windows-nt)
-                  "gh codespace list 1>NUL"
-                "gh codespace list 1>/dev/null")
+              (format "gh codespace list 1>%s" codespaces--null-device)
               nil "*codespaces-output*"))))
       (unless (zerop status)
         (user-error
@@ -228,9 +230,8 @@ allowing for faster startup.  Validation happens lazily on first use."
 
 (defun codespaces--get-default-branch (repo)
   "Return the default branch for REPO or signal an error if not found."
-  (let* ((null-device (if (eq system-type 'windows-nt) "NUL" "/dev/null"))
-         (command (format "gh repo view %s --json defaultBranchRef -q .defaultBranchRef.name 2>%s"
-                          repo null-device))
+  (let* ((command (format "gh repo view %s --json defaultBranchRef -q .defaultBranchRef.name 2>%s"
+                         repo codespaces--null-device))
          (branch (shell-command-to-string command)))
     (if (string-empty-p branch)
         (user-error "Error getting default branch.  Likely, no repository exists or it's inaccessible")
