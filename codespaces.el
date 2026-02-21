@@ -226,7 +226,42 @@ allowing for faster startup.  Validation happens lazily on first use."
   (cl-loop for v being the hash-values of (codespaces--all-codespaces)
            collect (list nil (codespaces-space-name v))))
 
+(defun codespaces--get-default-branch (repo)
+  "Return the default branch for REPO or signal an error if not found."
+  (let* ((null-device (if (eq system-type 'windows-nt) "NUL" "/dev/null"))
+         (command (format "gh repo view %s --json defaultBranchRef -q .defaultBranchRef.name 2>%s"
+                          repo null-device))
+         (branch (shell-command-to-string command)))
+    (if (string-empty-p branch)
+        (user-error "Error getting default branch.  Likely, no repository exists or it's inaccessible")
+      (string-trim branch))))
+
+(defun codespaces--create-from-args (repo branch machine)
+  "Create a codespace for args REPO BRANCH and MACHINE."
+  (message "Creating codespace...")
+  (let ((status
+         (codespaces--locally
+          (let ((inhibit-read-only t))
+          (shell-command
+           (format "gh codespace create --machine %s --repo %s --branch %s"
+                   machine repo branch)
+           nil "*codespaces-output*")))))
+    (if (zerop status)
+        (message "Codespace created successfully!")
+      (user-error "Command `gh codespace create` failed... [See *codespaces-output* buffer for details]"))))
+
 ;;; Public interface
+
+(defun codespaces-create ()
+  "Prompt for repository, branch, and machine type to create a Codespace."
+  (interactive)
+  (let* ((repo (read-string "Repository (user/repo): "))
+         (branch (read-string "Branch: " (or (codespaces--get-default-branch repo) "main")))
+         (machine (read-string "Machine type: " "basicLinux32gb")))
+    (when (string-empty-p repo)
+      (user-error "Repository must not be empty"))
+    (message "Creating codespace...")
+      (codespaces--create-from-args repo branch machine)))
 
 (defun codespaces-stop ()
   "Stop a codespace chosen by `completing-read'."
