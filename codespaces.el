@@ -251,6 +251,34 @@ allowing for faster startup.  Validation happens lazily on first use."
         (message "Codespace created successfully!")
       (user-error "Command `gh codespace create` failed... [See *codespaces-output* buffer for details]"))))
 
+(defun codespaces--get-machine-types (repo)
+  "Return an alist of machine types for REPO with name as key."
+  (let* ((output (shell-command-to-string
+                  (format
+                   "gh api -H 'Accept: application/vnd.github+json' \
+-H 'X-GitHub-Api-Version: 2022-11-28' /repos/%s/codespaces/machines 2>%s"
+                   repo
+                   codespaces--null-device)))
+         (machines (json-read-from-string output))
+         (machine-list
+          (mapcar (lambda (machine)
+                    (cons (alist-get 'name machine)
+                          (alist-get 'display_name machine)))
+                  (alist-get 'machines machines))))
+    machine-list))
+
+(defun codespaces--select-machine (repo)
+  "Prompt user to select a machine type for REPO by display name."
+  (let* ((machine-alist (codespaces--get-machine-types repo))
+         (display-alist (mapcar (lambda (entry)
+                                  (cons (cdr entry) (car entry)))
+                                machine-alist))
+         (choice (completing-read
+                  "Select machine type: "
+                  display-alist
+                  nil t)))
+    (cdr (assoc choice display-alist))))
+
 ;;; Public interface
 
 (defun codespaces-create ()
@@ -259,7 +287,7 @@ allowing for faster startup.  Validation happens lazily on first use."
   (codespaces--validate-gh)
   (let* ((repo (read-string "Repository (user/repo): "))
          (branch (read-string "Branch: " (or (codespaces--get-default-branch repo) "main")))
-         (machine (read-string "Machine type: " "basicLinux32gb")))
+         (machine (codespaces--select-machine repo)))
     (when (string-empty-p repo)
       (user-error "Repository must not be empty"))
     (message "Creating codespace...")
