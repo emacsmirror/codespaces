@@ -6,9 +6,9 @@
 
 ** About
 
-This package provides support for connecting to [[https://github.com/features/codespaces][GitHub Codespaces]] in Emacs via [[https://www.gnu.org/software/tramp/][TRAMP]]. It provides a handy =completing-read= UI that lets you choose from all your created codespaces. Here's a screenshot (running with [[https://github.com/minad/vertico][vertico]]):
+This package provides support for managing [[https://github.com/features/codespaces][GitHub Codespaces]] in Emacs and connecting to them via [[https://www.gnu.org/software/tramp/][TRAMP]]. It provides a handy =completing-read= UI that lets you choose from all your created codespaces.
 
-[[./screenshot.png]]
+[[./demo.gif]]
 
 Here is an example =use-package= declaration:
 

@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2022 Patrick Thomson and Bas Alberts and Fabian Markl
 
-;; Author: Patrick Thomson <patrickt@github.com>
+;; Author: Fabian Markl <fabian@markl.dev>
 ;; URL: https://github.com/F4ban/codespaces.el
 ;; Version: 0.2
 ;; Package-Requires: ((emacs "28.1"))
