@@ -319,6 +319,14 @@ allowing for faster startup.  Validation happens lazily on first use."
                        (or codespaces-default-directory
                            (format "/workspaces/%s" (codespaces-space-repository-name selected)))))))
 
+(defun codespaces-delete ()
+  "Delete a codespace chosen by `completing-read`."
+  (interactive)
+  (let ((selected (codespaces--complete (codespaces--all-codespaces))))
+    (when (yes-or-no-p (format "Are you sure you want to delete the codespace '%s'?" (codespaces-space-name selected)))
+             (shell-command
+              (format "gh codespace delete -c %s --force" (codespaces-space-name selected))))))
+
 (provide 'codespaces)
 
 ;;; codespaces.el ends here
